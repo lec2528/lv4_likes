@@ -20,7 +20,7 @@ const postsSchema = new Schema({
   },
   timestamp:{
     type:Date,
-    default: Date.now.getTime()+(3600000*9)
+    default: Date.now
   },
 
   // 좋아요기능 구현?
