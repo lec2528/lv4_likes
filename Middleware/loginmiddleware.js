@@ -2,12 +2,12 @@ const jwt = require("jsonwebtoken");
 const Signup = require("../schema/signup.js");
 
 module.exports = async (req, res, next) => {
-const{Authorization} = req.cookies;
-console.log(Authorization)
+  const { Authorization } = req.cookies;
+  console.log(Authorization);
 
-const {loginToken , loginType} = (Authorization?? "").split(" ")
+  const [ loginToken, loginType ] = (Authorization ?? "").split(" ");
 
-if (!loginToken || loginType !== "Bearer") {
+  if (!loginToken || loginType !== "Bearer") {
     res.status(401).send({
       errorMessage: "로그인 후 이용 가능한 기능입니다.",
     });
@@ -25,5 +25,4 @@ if (!loginToken || loginType !== "Bearer") {
       errorMessage: "로그인 후 이용 가능한 기능입니다.",
     });
   }
-
 };
