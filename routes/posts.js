@@ -1,33 +1,40 @@
 const express = require("express");
 const router = express.Router();
+
 const connect = require("../schema/index.js");
 const Posts = require("../schema/posts.js");
-const loginmiddleware =require("../Middleware/loginmiddleware.js")
 
+const loginmiddleware = require("../Middleware/loginmiddleware.js");
 
 connect();
 
-//게시글 생성 POST
-
-router.post("/posts", async (req, res) => {
-  const posts = await Posts.create({
-    user: req.body.user,
-    password: req.body.password,
-    title: req.body.title,
-    content: req.body.content,
-    timestamp: req.body.timestamp,
-  });
-
-  res
-    .status(200)
-    .json({ posts: posts, success: true, message: "게시글을 생성하였습니다." });
-});
-
-
 //게시글 조회
 router.get("/posts", async (req, res) => {
-  const posts = await Posts.find({});
+  const posts = await Posts.find({ postid }).sort("-date");
+  if (!posts) {
+    res.status(400).json({
+      errorMessage: "게시글 조회에 실패하였습니다.",
+    });
+  }
   res.status(200).json({ posts });
+});
+
+//게시글 생성 POST
+router.post("/posts", loginmiddleware, async (req, res) => {
+  const { nickName, passWord } = res.locals.signin
+  const { title, content } = req.body;
+
+  await Posts.create({
+    nickName,
+    passWord,
+    title,
+    content,
+  });
+
+  res.status(201).json({
+    success: true,
+    message: "게시글을 생성하였습니다.",
+  });
 });
 
 //게시글 상세 조회 GET
@@ -60,7 +67,7 @@ router.put("/posts/:postid", async (req, res) => {
     { _id: postid, user: user, password: password },
     { $set: { title: title, content: content, timestamp: timestamp } }
   );
-  res.status(200).json({ success :"게시글이 수정되었습니다." });
+  res.status(200).json({ success: "게시글이 수정되었습니다." });
 });
 
 //게시글 삭제

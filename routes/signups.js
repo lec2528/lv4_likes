@@ -3,6 +3,19 @@ const express = require("express");
 const router = express.Router();
 const Signup = require("../schema/signup.js");
 
+
+const loginmiddleware = require("../Middleware/loginmiddleware.js");
+
+
+router.get("/signups/me", loginmiddleware, async (req, res) => {
+  const { nickName } = res.locals.signups;
+  console.log(nickName)
+  res.status(200).json({
+    signups: { nickName }
+  });
+});
+
+
 //회원가입 api
 router.post("/signups", async (req, res) => {
   const { nickName, passWord, confirmPassword } = req.body;
