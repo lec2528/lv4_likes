@@ -2,7 +2,7 @@ const mongoose = require("mongoose");// 몽구스 변수에 몽구스 패키지 
 
 const connect = () => {
   mongoose  //db       //저장소  //포트 // db명           
-    .connect("mongodb://127.0.0.1:27017/message_board") // 몽고 db랑 연결
+    .connect("mongodb://127.0.0.1:27017/message_second") // 몽고 db랑 연결
     .catch(err => console.log(err)); //에러 발생시 처리방법
 };
 // localhost //루프백
