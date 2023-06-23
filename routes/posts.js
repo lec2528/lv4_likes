@@ -10,7 +10,7 @@ connect();
 
 //게시글 조회
 router.get("/posts", async (req, res) => {
-  const posts = await Posts.find({}).sort("-date");
+  const posts = await Posts.find({}).sort("date").exec();
   if (!posts) {
     res.status(400).json({
       errorMessage: "게시글 조회에 실패하였습니다.",
@@ -24,11 +24,25 @@ router.post("/posts", loginmiddleware, async (req, res) => {
   const { nickName, passWord } = res.locals.signin;
   const { title, content } = req.body;
 
+  const verify = await Posts.findOne({ nickName, passWord });
+
+  if (!verify) {
+    res.status(412).json({
+      errorMessage: "게시글을 작성하려면 로그인 해주세요",
+    });
+  }
+  if (!content) {
+    res.status(412).json({
+      errorMessage: "게시글을 작성해주세요",
+    });
+  }
+
   await Posts.create({
     nickName,
     passWord,
     title,
     content,
+    careatedAt: new Date(),
   });
 
   res.status(201).json({
@@ -39,8 +53,9 @@ router.post("/posts", loginmiddleware, async (req, res) => {
 //--------------------------------------------------------
 
 //게시글 상세 조회 GET
-router.post("/posts", async (req, res) => {
-  const { postid } = res.locals.signin;
+router.get("/posts/:postid", async (req, res) => {
+  const { postid } = req.params;
+  console.log({ postid });
   const detailpost = await Posts.find({ _id: postid });
   if (!detailpost.length) {
     return res.json({
@@ -49,14 +64,16 @@ router.post("/posts", async (req, res) => {
     });
   }
   res.status(200).json({ detailpost }); //posts: [result]
-});
-
+})
 // 게시글 수정
 router.put("/posts/:postid", loginmiddleware, async (req, res) => {
   const { nickName, password } = res.locals.signin;
+  const { postId } = req.params;
+  console.log(postId);
+  console.log(nickName);
   const { title, content, updatedAt } = req.body;
 
-  const verify = await Posts.find({ nickName, password });
+  const verify = await Posts.find({ nickName, password, _id:postId });
   if (!verify) {
     return res.status(412).json({
       success: false,
@@ -65,7 +82,7 @@ router.put("/posts/:postid", loginmiddleware, async (req, res) => {
   }
   await Posts.updateOne(
     { nickName, password },
-    { $set: { title, content, updatedAt} }
+    { $set: { title, content, updatedAt } }
   );
   res.status(200).json({ success: "게시글이 수정되었습니다." });
 });
