@@ -73,7 +73,7 @@ router.delete(
   "/posts/:postid/comment/:commentid",
   loginmiddleware,
   async (req, res) => {
-    const { nickName, password } = res.locals.signin;
+    const { nickName } = res.locals.signin;
     const { commentid } = req.params;
 
     const existcommentid = await Comment.find({ _id: commentid });
