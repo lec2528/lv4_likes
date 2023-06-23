@@ -19,6 +19,6 @@ router.post("/login", async (req, res) => {
   // 로그인시 쿠키 생성
   const token = jwt.sign({ signIn }, "custom-secret-key");
   res.cookie("Authorization", `Bearer ${token}`);
-  res.status(200).json({ token, success: "로그인에 성공하였습니다." });
+  res.status(200).json({ token, success: `안녕하세요${nickName}님 오늘도 행복한 하루 되세요!` });
 });
 module.exports = router;
