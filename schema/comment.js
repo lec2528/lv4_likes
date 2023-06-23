@@ -6,21 +6,23 @@ const {
 } = Schema;
 const commentSchema = new Schema(
   {
-    user: {
-      type: String,
-      required: true,
-    },
-    password: {
+    nickName: {
       type: String,
       required: true,
     },
     comment: {
       type: String,
+      required: true,
     },
+    createAt:{
+      type:Date,
+      default:Date.now
+    },
+    updateAt:{
+      type:Date,
+      default:Date.now
   },
-  {
-    timestamp: true,
-  }
+  }  
 );
 
 module.exports = mongoose.model("Comment", commentSchema);
