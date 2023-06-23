@@ -7,8 +7,9 @@ const Signup = require("../schema/signup.js");
 const loginmiddleware = require("../Middleware/loginmiddleware.js");
 
 
+//내 정보조회 api
 router.get("/signups/me", loginmiddleware, async (req, res) => {
-  const { nickName } = res.locals.signups;
+  const { nickName } = res.locals.signin
   console.log(nickName)
   res.status(200).json({
     signups: { nickName }
