@@ -1,30 +1,26 @@
 const express = require("express");
 const router = express.Router();
-
-const connect = require("../schema/index.js");
-const Posts = require("../schema/posts.js");
+const { Posts, Users } = require("../models");
 
 const loginmiddleware = require("../Middleware/loginmiddleware.js");
 
-connect();
-
 //게시글 조회
-router.get("/posts", async (req, res) => {
-  const posts = await Posts.find({}).sort("date").exec();
+router.get("/post", async (req, res) => {
+  const posts = await Posts.findAll({ where: {} }).sort("date").exec();
   if (!posts) {
     res.status(400).json({
-      errorMessage: "게시글 조회에 실패하였습니다.",
+      errorMessage: "게시글이 없습니다.",
     });
   }
   res.status(200).json({ posts });
 });
 
 //게시글 생성 POST
-router.post("/posts", loginmiddleware, async (req, res) => {
-  const { nickName, passWord } = res.locals.signin;
+router.post("/post", loginmiddleware, async (req, res) => {
+  const { nickname, password } = res.locals.signin;
   const { title, content } = req.body;
 
-  const verify = await Posts.findOne({ nickName, passWord });
+  const verify = await Posts.findOne({ nickname, password });
 
   if (!verify) {
     res.status(412).json({
@@ -37,16 +33,16 @@ router.post("/posts", loginmiddleware, async (req, res) => {
     });
   }
 
-  await Posts.create({
-    nickName,
-    passWord,
+  const post = await Posts.create({
+    nickname,
+    password,
     title,
     content,
     careatedAt: new Date(),
   });
 
   res.status(201).json({
-    success: true,
+    post,
     message: "게시글을 생성하였습니다.",
   });
 });
@@ -64,7 +60,7 @@ router.get("/posts/:postid", async (req, res) => {
     });
   }
   res.status(200).json({ detailpost }); //posts: [result]
-})
+});
 // 게시글 수정
 router.put("/posts/:postid", loginmiddleware, async (req, res) => {
   const { nickName, password } = res.locals.signin;
@@ -73,7 +69,7 @@ router.put("/posts/:postid", loginmiddleware, async (req, res) => {
   console.log(nickName);
   const { title, content, updatedAt } = req.body;
 
-  const verify = await Posts.find({ nickName, password, _id:postId });
+  const verify = await Posts.find({ nickName, password, _id: postId });
   if (!verify) {
     return res.status(412).json({
       success: false,

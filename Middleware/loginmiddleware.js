@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const Signup = require("../schema/signup.js");
+const { Users } = require("../models");
 
 module.exports = async (req, res, next) => {
   const { Authorization } = req.cookies;
@@ -13,9 +13,9 @@ module.exports = async (req, res, next) => {
   }
 
   try {
-    const { nickName } = jwt.verify(loginToken, "custom-secret-key");
-    const signin = await Signup.findOne(nickName);
-    res.locals.signin = signin;
+    const { userId } = jwt.verify(loginToken, "custom-secret-key");
+    const user = await Users.findOne(userId);
+    res.locals.signin = user;
     next();
   } catch (err) {
     console.error(err);
