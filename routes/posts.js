@@ -1,39 +1,40 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { Posts, Users } = require("../models");
+const { Posts, Users } = require('../models');
 
-const loginmiddleware = require("../Middleware/loginmiddleware.js");
+const loginmiddleware = require('../Middleware/loginmiddleware.js');
 
 //게시글 조회
-router.get("/post", async (req, res) => {
-  const posts = await Posts.findAll({ where: {} }).sort("date").exec();
+router.get('/post', async (req, res) => {
+  const posts = await Posts.findAll({ where: {} });
   if (!posts) {
     res.status(400).json({
-      errorMessage: "게시글이 없습니다.",
+      errorMessage: '게시글이 없습니다.',
     });
   }
   res.status(200).json({ posts });
 });
 
 //게시글 생성 POST
-router.post("/post", loginmiddleware, async (req, res) => {
-  const { nickname, password } = res.locals.signin;
-  const { title, content } = req.body;
+router.post('/post', loginmiddleware, async (req, res) => {
+  const { userId } = res.locals.signin;
+  const { title, content, nickname, password } = req.body;
 
   const verify = await Posts.findOne({ nickname, password });
 
   if (!verify) {
     res.status(412).json({
-      errorMessage: "게시글을 작성하려면 로그인 해주세요",
+      errorMessage: '게시글을 작성하려면 로그인 해주세요',
     });
   }
   if (!content) {
     res.status(412).json({
-      errorMessage: "게시글을 작성해주세요",
+      errorMessage: '게시글을 작성해주세요',
     });
   }
 
   const post = await Posts.create({
+    userId,
     nickname,
     password,
     title,
@@ -43,59 +44,56 @@ router.post("/post", loginmiddleware, async (req, res) => {
 
   res.status(201).json({
     post,
-    message: "게시글을 생성하였습니다.",
+    message: '게시글을 생성하였습니다.',
   });
 });
 //--------------------------------------------------------
 
 //게시글 상세 조회 GET
-router.get("/posts/:postid", async (req, res) => {
-  const { postid } = req.params;
-  console.log({ postid });
-  const detailpost = await Posts.find({ _id: postid });
+router.get('/post/:postId', async (req, res) => {
+  const { postId } = req.params;
+  console.log({ postId });
+  const detailpost = await Posts.findAll({ where: { postId } });
   if (!detailpost.length) {
     return res.json({
-      success: false,
-      errorMessage: "해당 게시글이 존재하지 않습니다.",
+      errorMessage: '해당 게시글이 존재하지 않습니다.',
     });
   }
   res.status(200).json({ detailpost }); //posts: [result]
 });
 // 게시글 수정
-router.put("/posts/:postid", loginmiddleware, async (req, res) => {
-  const { nickName, password } = res.locals.signin;
+router.put('/post/:postId', loginmiddleware, async (req, res) => {
+  const { userId } = res.locals.signin;
   const { postId } = req.params;
   console.log(postId);
-  console.log(nickName);
-  const { title, content, updatedAt } = req.body;
+  const { nickname, title, content, updatedAt } = req.body;
 
-  const verify = await Posts.find({ nickName, password, _id: postId });
-  if (!verify) {
+  const isExistPost = await Posts.findOne({ where: { postId: postId } });
+  if (!isExistPost) {
     return res.status(412).json({
-      success: false,
-      errorMessage: "수정권한이 없습니다.",
+      errorMessage: '수정할 게시글이 존재하지 않습니다.',
     });
   }
-  await Posts.updateOne(
-    { nickName, password },
-    { $set: { title, content, updatedAt } }
+  await Posts.update(
+    { nickname, title, content, updatedAt: new Date() },
+    { where: { postId } }
   );
-  res.status(200).json({ success: "게시글이 수정되었습니다." });
+  res.status(200).json({ success: '게시글이 수정되었습니다.' });
 });
 
 //게시글 삭제
-router.delete("/posts/:postid", loginmiddleware, async (req, res) => {
-  const { nickName, passWord } = res.locals.signin;
-
-  const verify = await Posts.find({ nickName, passWord });
-  if (!verify) {
+router.delete('/post/:postId', loginmiddleware, async (req, res) => {
+  const { postId } = req.params;
+  console.log(postId);
+  const isExistPost = await Posts.findOne({ where: { postId: postId } });
+  if (!isExistPost) {
     return res.status(400).json({
-      success: false,
-      errorMessage: "삭제 권한이 없습니다.",
+      errorMessage: '이미 삭제되었거나 존재하지 않습니다.',
     });
   }
-  await Posts.deleteOne({ nickName });
-  res.status(200).json({ success: "데이터 삭제에 성공했습니다." });
+
+  await Posts.destroy({ where: { postId } });
+  res.status(200).json({ success: '데이터 삭제에 성공했습니다.' });
 });
 
 module.exports = router;
