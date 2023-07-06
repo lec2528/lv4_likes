@@ -63,7 +63,6 @@ router.get('/post/:postId', async (req, res) => {
 });
 // 게시글 수정
 router.put('/post/:postId', loginmiddleware, async (req, res) => {
-  const { userId } = res.locals.signin;
   const { postId } = req.params;
   console.log(postId);
   const { nickname, title, content, updatedAt } = req.body;
