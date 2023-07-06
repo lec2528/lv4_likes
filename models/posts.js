@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.Users, {
-        sourceKey: 'userId', // 3. Users 모델의 userId 컬럼을
+        targetKey: 'userId', // 3. Users 모델의 userId 컬럼을
         foreignKey: 'userId',
       });
       this.hasMany(models.Comments, {
@@ -22,8 +22,8 @@ module.exports = (sequelize, DataTypes) => {
   Posts.init(
     {
       postId: DataTypes.INTEGER,
+      userId: DataTypes.INTEGER,
       nickname: DataTypes.STRING,
-      password: DataTypes.STRING,
       title: DataTypes.STRING,
       content: DataTypes.STRING,
     },

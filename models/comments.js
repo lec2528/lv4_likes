@@ -10,17 +10,20 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.Users, {
-        sourceKey: 'userId', // 3. Users 모델의 userId 컬럼을
+        targetKey: 'userId', // 3. Users 모델의 userId 컬럼을
         foreignKey: 'userId',
       });
       this.belongsTo(models.Posts, {
-        sourceKey: 'postId', // 3. Users 모델의 userId 컬럼을
+        targetKey: 'postId', // 3. Users 모델의 userId 컬럼을
         foreignKey: 'postId',
       });
     }
   }
   Comments.init(
     {
+      commentId: DataTypes.INTEGER,
+      postId: DataTypes.INTEGER,
+      userId: DataTypes.INTEGER,
       nickname: DataTypes.STRING,
       content: DataTypes.STRING,
     },
