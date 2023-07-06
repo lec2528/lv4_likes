@@ -15,7 +15,7 @@ router.get('/signup/me', loginmiddleware, async (req, res) => {
 
 //회원가입 api
 router.post('/signup', async (req, res) => {
-  const { nickname, password, email, confirm } = req.body;
+  const { nickname, password, email, confirm, userId } = req.body;
 
   if (!nickname.match(/^[a-zA-Z0-9]{3,50}$/)) {
     res.status(412).json({
@@ -39,15 +39,20 @@ router.post('/signup', async (req, res) => {
       .json({ errorMessage: '비밀번호는 4자리 이상 입력해주세요.' });
     return;
   }
+  if (!email) {
+    res.status(412).json({
+      errorMessage: '이메일을 입력해주세요.',
+    });
+  }
 
-  const signup = new Users({ nickname, email, password });
+  const signup = new Users({ nickname, email, password, userId });
   await signup.save();
-  res.status(201).json({ message: '회원 가입에 성공하였습니다.' });
+  res.status(201).json({ signup, message: '회원 가입에 성공하였습니다.' });
 });
 
 // 로그인 api
 router.post('/login', async (req, res) => {
-  const { nickname, email, password } = req.body;
+  const { nickname, password } = req.body;
 
   const uesr = await Users.findOne({ where: { nickname } });
   if (!uesr || password !== uesr.password) {
