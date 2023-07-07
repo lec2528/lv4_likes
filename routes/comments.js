@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Comments, Posts } = require('../models');
 const middleware = require('../Middleware/loginmiddleware.js');
+const { connect } = require('mongoose');
 
 //댓글 생성
 router.post('/post/:postId/comment', middleware, async (req, res) => {
@@ -18,6 +19,12 @@ router.post('/post/:postId/comment', middleware, async (req, res) => {
     });
   }
 
+  if (!content.length) {
+    res.status(412).json({
+      errorMessage: '댓글 내용을 입력해주세요',
+    });
+  }
+
   const comments = await Comments.create({
     postId,
     userId,
@@ -31,7 +38,18 @@ router.post('/post/:postId/comment', middleware, async (req, res) => {
 
 // 댓글 조회
 router.get('/post/:postId/comment', async (req, res) => {
-  const comment = await Comments.findAll({});
+  const comment = await Comments.findAll({
+    where: { postId: req.params.postId },
+    attributes: [
+      'commentId',
+      'postId',
+      'userId',
+      'nickname',
+      'content',
+      'createdAt',
+    ],
+    order: [['createdAt', 'DESC']],
+  });
   res.status(200).json({ comment });
 });
 
@@ -50,6 +68,12 @@ router.put('/post/:postId/comment/:commentId', middleware, async (req, res) => {
       errorMessage: '해당 댓글이 존재하지 않습니다.',
     });
   }
+
+  if (!content.length) {
+    res.status(412).json({
+      errorMessage: '수정할 내용을 입력해주세요',
+    });
+  }
   const updateComment = await Comments.update(
     { nickname, content, updateAt: Date.now() },
     { where: { commentId } }
@@ -57,7 +81,7 @@ router.put('/post/:postId/comment/:commentId', middleware, async (req, res) => {
   res.status(200).json({ updateComment, success: '댓글이 수정되었습니다.' });
 });
 
-//게시글 삭제
+//댓글 삭제
 router.delete(
   '/post/:postId/comment/:commentId',
   middleware,
