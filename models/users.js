@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
         sourceKey: 'userId', // 3. Users 모델의 userId 컬럼을
         foreignKey: 'userId',
       });
+      this.hasMany(models.Likes, {
+        sourceKey: 'userId', // 3. Users 모델의 userId 컬럼을
+        foreignKey: 'userId',
+      });
     }
   }
   Users.init(
