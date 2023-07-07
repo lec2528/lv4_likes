@@ -3,6 +3,7 @@ const { Users } = require('../models');
 
 module.exports = async (req, res, next) => {
   const { Authorization } = req.cookies;
+  console.log(req.cookies);
   const [loginType, loginToken] = (Authorization ?? '').split(' ');
 
   if (!loginToken || loginType !== 'Bearer') {
@@ -14,6 +15,7 @@ module.exports = async (req, res, next) => {
 
   try {
     const { userId } = jwt.verify(loginToken, 'custom-secret-key');
+    console.log({ userId });
     const user = await Users.findOne(userId);
     res.locals.signin = user;
     next();
