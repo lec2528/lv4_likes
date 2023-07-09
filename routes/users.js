@@ -5,13 +5,13 @@ const jwt = require('jsonwebtoken');
 const loginmiddleware = require('../Middleware/loginmiddleware.js');
 
 //내 정보조회 api
-router.get('/signup/me', loginmiddleware, async (req, res) => {
-  const { nickName } = res.locals.signin;
-  console.log(nickName);
-  res.status(200).json({
-    signups: { nickName },
-  });
-});
+// router.get('/signup/me', loginmiddleware, async (req, res) => {
+//   const { nickName } = res.locals.signin;
+//   console.log(nickName);
+//   res.status(200).json({
+//     signups: { nickName },
+//   });
+// });
 
 //회원가입 api
 router.post('/signup', async (req, res) => {
@@ -45,17 +45,17 @@ router.post('/signup', async (req, res) => {
     });
   }
 
-  const signup = new Users({ nickname, email, password, userId });
-  await signup.save();
-  res.status(201).json({ signup, message: '회원 가입에 성공하였습니다.' });
+  const user = new Users({ nickname, email, password, userId });
+  await user.save();
+  res.status(201).json({ user, message: '회원 가입에 성공하였습니다.' });
 });
 
 // 로그인 api
 router.post('/login', async (req, res) => {
   const { nickname, password } = req.body;
 
-  const uesr = await Users.findOne({ where: { nickname } });
-  if (!uesr || password !== uesr.password) {
+  const user = await Users.findOne({ where: { nickname } });
+  if (!user || password !== user.password) {
     res.status(412).json({
       errorMessage: '닉네임 또는 패스워드를 확인해주세요 ',
     });
@@ -63,11 +63,12 @@ router.post('/login', async (req, res) => {
   }
 
   // 로그인시 쿠키 생성
-  const token = jwt.sign({ Users }, 'custom-secret-key');
+  const token = jwt.sign({ userId: user.userId }, 'custom-secret-key');
+  console.log('토큰값 보기', token);
   res.cookie('Authorization', `Bearer ${token}`);
   res.status(200).json({
     token,
-    success: `안녕하세요${nickname}님 오늘도 행복한 하루 되세요!`,
+    success: `로그인 완료`,
   });
 });
 module.exports = router;

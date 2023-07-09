@@ -17,7 +17,8 @@ router.get('/post', async (req, res) => {
 
 //게시글 생성 POST
 router.post('/post', loginmiddleware, async (req, res) => {
-  const { userId } = res.locals.signin;
+  const { userId } = res.locals.user;
+  console.log('user', userId);
   const { title, content, nickname, password } = req.body;
 
   const verify = await Posts.findOne({ nickname, password });
