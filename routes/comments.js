@@ -2,11 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { Comments, Posts } = require('../models');
 const middleware = require('../Middleware/loginmiddleware.js');
-const { connect } = require('mongoose');
 
 //댓글 생성
 router.post('/post/:postId/comment', middleware, async (req, res) => {
-  const { userId } = res.locals.signin;
+  const { userId } = res.locals.user;
   console.log('userId', userId);
   const { postId } = req.params;
   const { nickname, content } = req.body;
