@@ -34,9 +34,11 @@ router.get('/like/post', middleware, async (req, res) => {
     // 좋아요한 게시물을 가져오기 위해 Likes 테이블과 Posts 테이블을 조인합니다.
     const likedPosts = await Likes.findAll({
       where: { userId },
-      include: [{ model: Posts }],
+      include: {
+        model: Posts,
+      },
     });
-
+    console.log(likedPosts);
     res.status(200).json({ likedPosts });
   } catch (error) {
     console.error(error);

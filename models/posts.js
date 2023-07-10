@@ -19,17 +19,22 @@ module.exports = (sequelize, DataTypes) => {
       });
       this.hasMany(models.Likes, {
         sourceKey: 'postId', // 3. Users 모델의 userId 컬럼을
-        foreignKey: 'postId',
+        targetKey: 'postId',
       });
     }
   }
   Posts.init(
     {
-      postId: DataTypes.INTEGER,
+      postId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
       userId: DataTypes.INTEGER,
       nickname: DataTypes.STRING,
       title: DataTypes.STRING,
       content: DataTypes.STRING,
+      like: DataTypes.INTEGER,
     },
     {
       sequelize,
