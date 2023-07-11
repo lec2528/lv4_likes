@@ -10,16 +10,16 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.hasMany(models.Posts, {
-        sourceKey: 'userId', // 3. Users 모델의 userId 컬럼을
-        foreignKey: 'userId',
+        sourceKey: 'userId', //Users 모델의 userId 컬럼을
+        foreignKey: 'userId', //Posts 모델의 userId 컬럼과 연결
       });
       this.hasMany(models.Comments, {
-        sourceKey: 'userId', // 3. Users 모델의 userId 컬럼을
-        foreignKey: 'userId',
+        sourceKey: 'userId', // Users 모델의 userId 컬럼을
+        foreignKey: 'userId', //Comments 모델의 userId 컬럼과 연결
       });
       this.hasMany(models.Likes, {
-        sourceKey: 'userId', // 3. Users 모델의 userId 컬럼을
-        foreignKey: 'userId',
+        sourceKey: 'userId', // Users 모델의 userId 컬럼을
+        foreignKey: 'userId', //Likes 모델의 userId 컬럼과 연결
       });
     }
   }

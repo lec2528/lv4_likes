@@ -10,12 +10,12 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.Users, {
-        targetKey: 'userId',
-        foreignKey: 'userId',
+        targetKey: 'userId', //Users 모델의 userId를
+        foreignKey: 'userId', //Likes 모델의 userId와 연결
       });
       this.belongsTo(models.Posts, {
-        targetKey: 'postId',
-        foreignKey: 'postId',
+        targetKey: 'postId', //Users 모델의 postId를
+        foreignKey: 'postId', //Likes 모델의 postId 연결
       });
     }
   }
